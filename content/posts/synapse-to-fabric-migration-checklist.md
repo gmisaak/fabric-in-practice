@@ -24,11 +24,9 @@ The Migration Assistant converts what it can see: the DDL in your database proje
 - `SYSNAME` columns and variables
 - Synapse-only statements such as `SET RESULT_SET_CACHING OFF`
 
-💡 **Regex tip:** before replacing type names, mask everything in `[brackets]`. Otherwise a column called `[Datetime]` becomes `[DATETIME2(6)]`.
-
 ## 1. Collation: decide before you create the warehouse
 
-This one comes before any DDL. Synapse pools typically run on a **case-insensitive** collation (`SQL_Latin1_General_CP1_CI_AS`). Fabric Warehouse defaults to `Latin1_General_100_BIN2_UTF8`, which is **case-sensitive**:
+This one comes before any DDL. Our Synapse pool ran on a **case-insensitive** collation (`SQL_Latin1_General_CP1_CI_AS`). Fabric Warehouse defaults to `Latin1_General_100_BIN2_UTF8`, which is **case-sensitive**:
 
 ```sql
 SELECT * FROM dbo.Customer WHERE Status = 'active';  -- won't find 'Active'
@@ -57,7 +55,7 @@ The catch: collation is set **when the warehouse is created**. When we started, 
 - Accented Latin letters (`č`, `ü`) → 2 bytes
 - **`€`, `„“`, `–`, `…`, `™`** → **3 bytes** for a single UTF-16 unit
 
-Text pasted from Word or email is full of these. A column that was full in Synapse can fail to load in Fabric after the "correct" automatic conversion. The only guaranteed-safe size is `3*n`, but `NVARCHAR(4000)` then exceeds the 8000-byte limit and becomes `VARCHAR(MAX)`. Treat the generated DDL as a starting point and **check actual data lengths in bytes** for critical columns.
+Text pasted from Word or email is full of these. A column that was full in Synapse can fail to load in Fabric after the "correct" automatic conversion. The only guaranteed-safe size is `3*n`, but `NVARCHAR(4000)` then exceeds the 8000-byte limit and becomes `VARCHAR(MAX)`. Treat the generated DDL as a starting point and **adjust the lengths if necessary**.
 
 💡 **For `NCHAR`, we went the other way: `NCHAR(n)` → `CHAR(n)`.** `CHAR` is fixed-length, so applying 2×n would pad every value: a currency code in `CHAR(6)` is stored as `'CZK   '`. Comparisons ignore trailing spaces, but exports, concatenations and `LEN` vs. `DATALENGTH` checks don't. Our `NCHAR` columns held ASCII codes (currencies, countries, flags), so `CHAR(n)` fits exactly. If an `NCHAR` column can contain non-ASCII characters, `CHAR(n)` is too short, so check the data first.
 
@@ -77,11 +75,11 @@ CREATE TABLE #a AS SELECT GETDATE() AS a;
 CREATE TABLE #a AS SELECT CAST(GETDATE() AS DATETIME2(6)) AS a;  -- OK
 ```
 
-The same applies to `JSON_VALUE()` (returns `nvarchar`) and to `.name` columns from catalog views (`sysname`). Rule of thumb: **every column in `SELECT INTO` / CTAS gets an explicit CAST.**
+The same applies to `JSON_VALUE()` (returns `nvarchar`) and to `.name` columns from catalog views (`sysname`). Rule of thumb: **every expression in `SELECT INTO` / CTAS gets an explicit CAST.**
 
-## 4. Remove distributions and indexes
+## 4. Remove distributions, partitions and indexes
 
-`DISTRIBUTION = HASH(...)`, `CLUSTERED COLUMNSTORE INDEX` and partitioning clauses are gone. Fabric manages storage itself (Delta/Parquet). Delete them from the DDL; you don't need to translate them into anything else. The same goes for query hints like `WITH (NOLOCK)`. We removed them all.
+`DISTRIBUTION = HASH(...)`, `DISTRIBUTION = REPLICATE`, `CLUSTERED COLUMNSTORE INDEX` and partitioning clauses are gone. Fabric manages storage itself (Delta/Parquet). Delete them from the DDL; you don't need to translate them into anything else. The same goes for query hints like `WITH (NOLOCK)`. We removed them all.
 
 The one exception is **partitioning on large tables**. Where we relied on it for performance (typically date-based fact tables), we replaced it with **data clustering**, Fabric's way of co-locating rows with similar values so queries filtering on those columns read less data:
 
