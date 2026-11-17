@@ -22,10 +22,9 @@ enableRobotsTXT = true
     Title = "Fabric in Practice"
     Content = "Lessons learned from migrating and running an enterprise data warehouse on Microsoft Fabric."
 
-  # TODO: uncomment and fill in your LinkedIn profile URL
-  # [[params.socialIcons]]
-  #   name = "linkedin"
-  #   url = "https://www.linkedin.com/in/<your-profile>/"
+  [[params.socialIcons]]
+    name = "linkedin"
+    url = "https://www.linkedin.com/in/michal-ponocn%C3%BD-01376092/"
   [[params.socialIcons]]
     name = "github"
     url = "https://github.com/gmisaak"
