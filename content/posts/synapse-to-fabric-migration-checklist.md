@@ -9,7 +9,7 @@ series: ["Fabric Warehouse in Practice"]
 
 *Fabric Warehouse in Practice #1*
 
-We migrated an enterprise data warehouse from Azure Synapse Dedicated SQL Pool to Microsoft Fabric Warehouse, using the Fabric Migration Assistant plus a set of our own scripts. The T-SQL looks almost identical, so it's tempting to copy the DDL across and fix whatever breaks. Here's the checklist we ended up with, so you can fix things up front instead. Some of it applies to SQL Server → Fabric migrations too, not just Synapse.
+We migrated an enterprise data warehouse from Azure Synapse Dedicated SQL Pool to Microsoft Fabric Warehouse, using the Fabric Migration Assistant plus a set of our own scripts. Fabric Warehouse is highly compatible with Synapse, and the T-SQL looks almost identical, so it's tempting to copy the DDL across and fix whatever breaks. Here's the checklist we ended up with, so you can fix things up front instead. Some of it applies to SQL Server → Fabric migrations too, not just Synapse.
 
 ## 0. Before you run Migration Assistant
 
