@@ -79,7 +79,7 @@ The same applies to `JSON_VALUE()` (returns `nvarchar`) and to `.name` columns f
 
 ## 4. Remove distributions, partitions and indexes
 
-`DISTRIBUTION = HASH(...)`, `DISTRIBUTION = REPLICATE`, `CLUSTERED COLUMNSTORE INDEX` and partitioning clauses are gone. Fabric manages storage itself (Delta/Parquet). Delete them from the DDL; you don't need to translate them into anything else. The same goes for query hints like `WITH (NOLOCK)`. We removed them all.
+`DISTRIBUTION = HASH(...)`, `CLUSTERED COLUMNSTORE INDEX` and partitioning clauses are gone. Fabric manages storage itself (Delta/Parquet). Delete them from the DDL; you don't need to translate them into anything else. The same goes for query hints like `WITH (NOLOCK)`. We removed them all.
 
 The one exception is **partitioning on large tables**. Where we relied on it for performance (typically date-based fact tables), we replaced it with **data clustering**, Fabric's way of co-locating rows with similar values so queries filtering on those columns read less data:
 
