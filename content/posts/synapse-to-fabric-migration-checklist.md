@@ -163,15 +163,13 @@ After a list full of caveats, a fair question is whether it was worth it. For us
 
 - ✅ **Better performance.** Our loads and queries run noticeably faster than on the Synapse pool.
 - ✅ **Scaling without downtime.** Capacity can be scaled up or down without taking the warehouse offline.
-- ✅ **One storage for all data.** OneLake keeps the warehouse, lakehouse and Power BI on the same Delta/Parquet data. Shortcuts replace copies, and Direct Lake reads the data in place.
+- ✅ **One storage for all data.** OneLake keeps the warehouse, lakehouse and Power BI on the same Delta/Parquet data. Shortcuts replace copies, cross-database queries join warehouses and lakehouse SQL endpoints in the same workspace without moving data, and Direct Lake reads the data in place.
 - ✅ **A platform with a future.** Fabric is where Microsoft is investing and where new features land, so it's easier to migrate on your own schedule than under pressure later.
 
 **And some workarounds you can finally delete**
 
 - ✅ `DROP TABLE IF EXISTS`
 - ✅ **Default values for procedure parameters**, so you can call a procedure without passing every parameter
-- ✅ **Cross-database queries** between warehouses and lakehouse SQL endpoints **in the same workspace**
-
 ## Takeaway
 
 Most of these changes are mechanical, which means you can **automate** them: a script over your DDL that looks for `NVARCHAR`, `DATETIME`, `TINYINT`, `DISTRIBUTION` and uncast `SELECT INTO` expressions catches most of the problems before deployment. Migration Assistant does a lot of the work, but not all of it. Plan for the rest, and the result is worth it.
