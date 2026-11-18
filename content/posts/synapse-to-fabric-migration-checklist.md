@@ -170,6 +170,7 @@ After a list full of caveats, a fair question is whether it was worth it. For us
 
 - ✅ `DROP TABLE IF EXISTS`
 - ✅ **Default values for procedure parameters**, so you can call a procedure without passing every parameter
+
 ## Takeaway
 
 Most of these changes are mechanical, which means you can **automate** them: a script over your DDL that looks for `NVARCHAR`, `DATETIME`, `TINYINT`, `DISTRIBUTION` and uncast `SELECT INTO` expressions catches most of the problems before deployment. Migration Assistant does a lot of the work, but not all of it. Plan for the rest, and the result is worth it.
